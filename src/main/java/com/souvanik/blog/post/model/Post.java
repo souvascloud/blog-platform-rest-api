@@ -37,7 +37,8 @@ public class Post {
 
     @Column(nullable=false, length=200) private String title;
     @Column(nullable=false, length=220) private String slug;
-    @Lob @Column(nullable=false) private String content;
+
+    @Column(columnDefinition = "TEXT", nullable = false) private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=20)

@@ -2,6 +2,7 @@ package com.souvanik.blog.common.exception;
 
 import com.souvanik.blog.common.api.ApiError;
 import com.souvanik.blog.common.api.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.util.List;
  * Licensed under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

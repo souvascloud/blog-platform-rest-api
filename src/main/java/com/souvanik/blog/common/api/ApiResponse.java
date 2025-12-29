@@ -1,6 +1,7 @@
 package com.souvanik.blog.common.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,16 +13,28 @@ import java.time.Instant;
  * Licensed under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+@Schema(description = "Standard API response wrapper")
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
+    @Schema(example = "2025-01-01T10:15:30Z")
     private final Instant timestamp;
+
+    @Schema(example = "200")
     private final int status;
+
+    @Schema(description = "true if request was successful")
     private final boolean success;
+
+    @Schema(description = "Actual response payload(Present Only on Success)")
     private final T data;
+
+    @Schema(description = "Error details if request failed")
     private final ApiError error;
+
+    @Schema(description = "Pagination metadata (if applicable)")
     private final Object meta;
 
     public static <T> ApiResponse<T> success(int status, T data, Object meta) {

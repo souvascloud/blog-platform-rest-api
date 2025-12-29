@@ -1,0 +1,40 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BlogPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="APP_SECURITY_JWT_ACCESS_EXP_MIN" value="900000" />
+      <env name="APP_SECURITY_JWT_REFRESH_EXP_DAYS" value="604800000" />
+      <env name="APP_SECURITY_JWT_SECRET" value="Crazy Fredrick bought many very exquisite opal jewels just to flex" />
+      <env name="SPRING_DATASOURCE_PASSWORD" value="postgres" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://localhost:5432/blog_db" />
+      <env name="SPRING_DATASOURCE_USERNAME" value="postgres" />
+      <env name="SPRING_PROFILES_ACTIVE" value="dev" />
+    </envs>
+    <module name="blog-platform" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.souvanik.blog.BlogPlatformApplication" />
+    <option name="VM_PARAMETERS" value="-Duser.timezone=UTC" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+  <configuration default="false" name="BlogPlatformApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+    <envs>
+      <env name="APP_SECURITY_JWT_ACCESS_EXP_MIN" value="900000" />
+      <env name="APP_SECURITY_JWT_SECRET" value="Crazy Fredrick bought many very exquisite opal jewels just to flex" />
+      <env name="SPRING_DATASOURCE_PASSWORD" value="postgres" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://localhost:5432/blog_db?TimeZone=Asia/Calcutta" />
+      <env name="SPRING_DATASOURCE_USERNAME" value="postgres" />
+      <env name="SPRING_PROFILES_ACTIVE" value="dev" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.souvanik.blog.BlogPlatformApplication" />
+    <module name="blog-platform" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.souvanik.blog.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

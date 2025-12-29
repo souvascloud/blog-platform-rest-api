@@ -30,7 +30,8 @@ public class Comment {
     @ManyToOne(fetch=FetchType.LAZY, optional=false)
     @JoinColumn(name="author_id") private User author;
 
-    @Lob @Column(nullable=false) private String content;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=20)
