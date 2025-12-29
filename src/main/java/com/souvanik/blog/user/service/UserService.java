@@ -12,7 +12,7 @@ import java.util.UUID;
  * https://opensource.org/licenses/MIT
  */
 public interface UserService {
-    UserResponse getById(UUID id);
+    UserResponse getCurrentUser();
 
-    UserResponse updateProfile(UUID userId, UpdateProfileRequest request);
+    UserResponse updateCurrentUser(UpdateProfileRequest request);
 }

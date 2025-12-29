@@ -27,23 +27,21 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable UUID id) {
-        logger.debug("GET /api/v1/users/{}", id);
-        UserResponse user = userService.getById(id);
-        logger.debug("Completed GET /api/v1/users/{}", id);
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponse>> getMe() {
+        logger.debug("GET /api/v1/users/me");
+
+        UserResponse user = userService.getCurrentUser();
         return ResponseEntity.ok(ApiResponse.success(200, user));
     }
 
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(
-            @PathVariable UUID id,
+    @PutMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponse>> updateMe(
             @RequestBody @Valid UpdateProfileRequest request) {
-        logger.debug("PUT /api/v1/users/{} - update profile", id);
 
-        UserResponse updated = userService.updateProfile(id, request);
-        logger.debug("Completed PUT /api/v1/users/{}", id);
+        logger.debug("PUT /api/v1/users/me - update profile");
+
+        UserResponse updated = userService.updateCurrentUser(request);
         return ResponseEntity.ok(ApiResponse.success(200, updated));
     }
 }

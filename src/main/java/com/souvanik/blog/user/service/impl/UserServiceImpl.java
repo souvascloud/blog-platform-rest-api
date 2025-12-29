@@ -1,5 +1,6 @@
 package com.souvanik.blog.user.service.impl;
 
+import com.souvanik.blog.auth.security.util.SecurityUtil;
 import com.souvanik.blog.common.exception.ErrorCode;
 import com.souvanik.blog.common.exception.ResourceNotFoundException;
 import com.souvanik.blog.user.dto.UpdateProfileRequest;
@@ -32,31 +33,38 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserResponse getById(UUID id) {
-        logger.debug("Fetching user by id={}", id);
+    public UserResponse getCurrentUser() {
+        String email = SecurityUtil.getCurrentUsername();
+        logger.debug("Fetching current user profile for email={}", email);
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorCode.RESOURCE_NOT_FOUND,
-                        "User not found with id: " + id));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.warn("Authenticated user not found in DB for email={}", email);
+                    return new ResourceNotFoundException(
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            "Current user not found");
+                });
 
-        logger.info("Fetched user id={} username={}", user.getId(), user.getUsername());
         return toResponse(user);
     }
 
     @Override
     @Transactional
-    public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
-        logger.debug("Updating profile for userId={}", userId);
+    public UserResponse updateCurrentUser(UpdateProfileRequest request) {
+        String email = SecurityUtil.getCurrentUsername();
+        logger.debug("Updating current user profile for email={}", email);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorCode.RESOURCE_NOT_FOUND,
-                        "User not found with id: " + userId));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.warn("Authenticated user not found for update email={}", email);
+                    return new ResourceNotFoundException(
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            "Current user not found");
+                });
 
         user.setBio(request.getBio());
 
-        logger.info("Updated profile for userId={}", userId);
+        logger.info("Updated profile for current user email={}", email);
         return toResponse(user);
     }
 
