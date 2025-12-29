@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class PostServiceImpl implements PostService {
     private final PostLikeRepository likeRepo;
     private final UserRepository userRepo;
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public PostResponse create(CreatePostRequest req) {
         String email = SecurityUtil.getCurrentUsername();
@@ -83,6 +85,7 @@ public class PostServiceImpl implements PostService {
         return postRepo.findByStatus(PostStatus.PUBLISHED, pageable).map(this::toResponse);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public PostResponse update(UUID id, UpdatePostRequest req) {
         String email = SecurityUtil.getCurrentUsername();
@@ -102,6 +105,7 @@ public class PostServiceImpl implements PostService {
         return toResponse(post);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void delete(UUID id) {
         String email = SecurityUtil.getCurrentUsername();
@@ -114,6 +118,7 @@ public class PostServiceImpl implements PostService {
         logger.info("Deleted post id={} by {}", id, email);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public CommentResponse addComment(UUID postId, CreateCommentRequest req) {
         String email = SecurityUtil.getCurrentUsername();
@@ -141,6 +146,7 @@ public class PostServiceImpl implements PostService {
                         .content(c.getContent()).createdAt(c.getCreatedAt()).build()).toList();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void like(UUID postId) {
         String email = SecurityUtil.getCurrentUsername();
@@ -157,6 +163,7 @@ public class PostServiceImpl implements PostService {
         logger.info("Liked post={} by {}", postId, email);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void unlike(UUID postId) {
         String email = SecurityUtil.getCurrentUsername();

@@ -11,6 +11,7 @@ import com.souvanik.blog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public UserResponse getCurrentUser() {
         String email = SecurityUtil.getCurrentUsername();
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
         return toResponse(user);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     @Transactional
     public UserResponse updateCurrentUser(UpdateProfileRequest request) {
