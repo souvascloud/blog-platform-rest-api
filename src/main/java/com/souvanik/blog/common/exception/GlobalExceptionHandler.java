@@ -3,6 +3,8 @@ package com.souvanik.blog.common.exception;
 import com.souvanik.blog.common.api.ApiError;
 import com.souvanik.blog.common.api.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,8 +21,11 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
+        logger.warn("Handled API exception: code={} message={}", ex.getErrorCode(), ex.getMessage());
         ApiError error = ApiError.builder()
                 .code(ex.getErrorCode().name())
                 .message(ex.getMessage())
@@ -70,6 +75,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleOther(Exception ex) {
+        logger.error("Unhandled exception occurred", ex);
         ApiError error = ApiError.builder()
                 .code(ErrorCode.INTERNAL_ERROR.name())
                 .message("Unexpected error occurred")

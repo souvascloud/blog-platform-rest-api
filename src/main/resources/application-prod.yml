@@ -19,8 +19,8 @@ app:
   security:
     jwt:
       secret: ${APP_SECURITY_JWT_SECRET}
-      access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN:10}
-      refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS:7}
+      access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN}
+      refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS}
 
 logging:
   level:

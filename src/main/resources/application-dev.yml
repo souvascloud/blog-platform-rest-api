@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/blog_db}
-    username: ${SPRING_DATASOURCE_USERNAME:blog_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:blog_pass}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -21,9 +21,9 @@ spring:
 app:
   security:
     jwt:
-      secret: ${APP_SECURITY_JWT_SECRET:dev-secret-change-me}
-      access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN:15}
-      refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS:7}
+      secret: ${APP_SECURITY_JWT_SECRET}
+      access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN}
+      refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS}
 
 springdoc:
   swagger-ui:
