@@ -21,8 +21,9 @@ The Blog Platform backend is a **stateless RESTful system** built using **Spring
 ---
 
 ## 2. High-Level System Architecture
+ 
+<img width="694" height="937" alt="system-arch" src="https://github.com/user-attachments/assets/3ac7b221-2edc-46ec-aa5a-0c8ce2341f84" />
 
- **Diagram:** `system-architecture.png`
 
 ### Description
 Clients interact with the backend through HTTP REST APIs.  
@@ -30,7 +31,6 @@ All requests pass through the security layer before reaching controllers.
 
 ### Components
 - Clients (Web, Mobile, Swagger, Postman)
-- API Gateway / Load Balancer
 - Spring Boot Application
 - PostgreSQL Database
 
@@ -45,7 +45,8 @@ All requests pass through the security layer before reaching controllers.
 
 ## 3. Application Layered Architecture
 
- **Diagram:** `layered-architecture.png`
+<img width="1101" height="773" alt="layered-architecture" src="https://github.com/user-attachments/assets/772f5100-b158-423f-b39d-639a65f11319" />
+
 
 ### Layers Explained
 
@@ -75,7 +76,7 @@ All requests pass through the security layer before reaching controllers.
 
 ## 4. Authentication & Authorization Architecture
 
- **Diagram:** `jwt-auth-flow.png`
+ <img width="825" height="448" alt="jwt-flow" src="https://github.com/user-attachments/assets/168806f3-4802-4546-9a72-82528872e6f6" />
 
 ### Authentication Flow
 1. User logs in with credentials
@@ -99,7 +100,7 @@ All requests pass through the security layer before reaching controllers.
 
 ## 5. Spring Security Filter Chain
 
- **Diagram:** `security-filter-chain.png`
+<img width="876" height="421" alt="security-filter-chain-sequnce" src="https://github.com/user-attachments/assets/e1bd0247-058f-4e66-b641-f6ab24fb3de3" />
 
 ### Filter Order
 1. CORS Filter
@@ -117,7 +118,8 @@ All requests pass through the security layer before reaching controllers.
 
 ## 6. Domain Model & Database Design
 
- **Diagram:** `domain-model.png`
+<img width="518" height="685" alt="erd" src="https://github.com/user-attachments/assets/58af0446-18da-4a9f-b3a6-7d49ccf820b5" />
+
 
 ### Core Entities
 - User
@@ -136,7 +138,7 @@ All requests pass through the security layer before reaching controllers.
 
 ## 7. Admin Module Architecture
 
- **Diagram:** `admin-authorization.png`
+<img width="1258" height="593" alt="admin-flow" src="https://github.com/user-attachments/assets/744458d6-cd7d-4466-9ca5-35dd093829b1" />
 
 ### Capabilities
 - User moderation
@@ -152,7 +154,7 @@ All requests pass through the security layer before reaching controllers.
 
 ## 8. Error Handling Architecture
 
- **Diagram:** `exception-handling.png`
+<img width="718" height="501" alt="exception-flow" src="https://github.com/user-attachments/assets/8cb53644-8cd4-42d5-9457-8640e6740d7a" />
 
 ### Strategy
 - Centralized exception handling
