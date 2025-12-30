@@ -3,7 +3,6 @@ package com.souvanik.blog.admin.controller;
 import com.souvanik.blog.admin.dto.AdminStatsResponse;
 import com.souvanik.blog.admin.dto.UserAdminResponse;
 import com.souvanik.blog.admin.service.AdminService;
-import com.souvanik.blog.common.SwaggerExamples;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.api.PageMeta;
 import com.souvanik.blog.post.model.PostStatus;
@@ -21,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
+import static com.souvanik.blog.common.swagger.admin.AdminSwaggerExamples.*;
 
 /*
  * Copyright (c) 2025 Souvanik Saha
@@ -55,7 +56,7 @@ public class AdminController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_USERS_LIST_SUCCESS
+                                    value = ADMIN_USERS_LIST_SUCCESS
                             )
                     )
             ),
@@ -90,7 +91,7 @@ public class AdminController {
                     description = "User blocked successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_USER_BLOCK_SUCCESS
+                                    value = ADMIN_USER_BLOCK_SUCCESS
                             )
                     )
             ),
@@ -115,7 +116,7 @@ public class AdminController {
                     description = "User unblocked successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_USER_UNBLOCK_SUCCESS
+                                    value = ADMIN_USER_UNBLOCK_SUCCESS
                             )
                     )
             )
@@ -139,7 +140,7 @@ public class AdminController {
                     description = "Post status updated successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_POST_STATUS_UPDATE_SUCCESS
+                                    value = ADMIN_POST_STATUS_UPDATE_SUCCESS
                             )
                     )
             )
@@ -166,7 +167,7 @@ public class AdminController {
                     description = "Post deleted successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_POST_DELETE_SUCCESS
+                                    value = ADMIN_POST_DELETE_SUCCESS
                             )
                     )
             )
@@ -189,7 +190,7 @@ public class AdminController {
                     description = "Comment deleted successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_COMMENT_DELETE_SUCCESS
+                                    value = ADMIN_COMMENT_DELETE_SUCCESS
                             )
                     )
             )
@@ -214,7 +215,7 @@ public class AdminController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.ADMIN_STATS_SUCCESS
+                                    value = ADMIN_STATS_SUCCESS
                             )
                     )
             )

@@ -91,9 +91,11 @@ public class PostServiceImpl implements PostService {
                 .map(this::toResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
     @Override
+    @PreAuthorize("isAuthenticated()")
+    @Transactional
     public PostResponse update(UUID id, UpdatePostRequest req) {
+
         User me = getCurrentUser();
 
         Post post = postRepo.findById(id)
@@ -104,16 +106,22 @@ public class PostServiceImpl implements PostService {
 
         assertOwner(post, me);
 
-        if (req.getTitle() != null) {
+        if (req.getTitle() != null && !req.getTitle().equals(post.getTitle())) {
+
             post.setTitle(req.getTitle());
-            post.setSlug(generateUniqueSlug(
-                    SlugUtil.toSlug(req.getTitle())
-            ));
+
+            // Slug changes ONLY for draft posts
+            if (post.getStatus() == PostStatus.DRAFT) {
+                post.setSlug(generateUniqueSlug(
+                        SlugUtil.toSlug(req.getTitle())
+                ));
+            }
         }
 
         if (req.getContent() != null) {
             post.setContent(req.getContent());
         }
+
 
         if (req.getStatus() != null) {
             post.setStatus(req.getStatus());
@@ -123,7 +131,8 @@ public class PostServiceImpl implements PostService {
             post.setTags(resolveTags(req.getTags()));
         }
 
-        logger.info("Updated post id={} by {}", id, me.getEmail());
+        logger.info("Post updated id={} by user={}", id, me.getEmail());
+
         return toResponse(post);
     }
 

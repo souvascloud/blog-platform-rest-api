@@ -6,7 +6,6 @@ import com.souvanik.blog.auth.dto.RefreshTokenRequest;
 import com.souvanik.blog.auth.dto.RegisterRequest;
 import com.souvanik.blog.auth.security.util.CustomUserPrincipal;
 import com.souvanik.blog.auth.service.AuthService;
-import com.souvanik.blog.common.SwaggerExamples;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.config.OpenApiConfig;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.souvanik.blog.common.swagger.CommonSwaggerExamples.*;
+import static com.souvanik.blog.common.swagger.auth.AuthSwaggerExamples.*;
 
 /*
  * Copyright (c) 2025 Souvanik Saha
@@ -87,7 +89,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.AUTH_SUCCESS
+                                    value = AUTH_SUCCESS
                             )
                     )
             ),
@@ -97,7 +99,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.VALIDATION_ERROR
+                                    value = VALIDATION_ERROR
                             )
                     )
             ),
@@ -107,7 +109,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.CONFLICT
+                                    value = CONFLICT
                             )
                     )
             ),
@@ -117,7 +119,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )
@@ -164,7 +166,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.AUTH_SUCCESS
+                                    value = AUTH_SUCCESS
                             )
                     )
             ),
@@ -174,7 +176,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.VALIDATION_ERROR
+                                    value = VALIDATION_ERROR
                             )
                     )
             ),
@@ -184,7 +186,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -194,7 +196,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )
@@ -239,7 +241,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.AUTH_SUCCESS
+                                    value = AUTH_SUCCESS
                             )
                     )
             ),
@@ -249,7 +251,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.TOKEN_EXPIRED
+                                    value = TOKEN_EXPIRED
                             )
                     )
             ),
@@ -259,7 +261,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )
@@ -274,7 +276,7 @@ public class AuthController {
                                     implementation = RefreshTokenRequest.class
                             ),
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.REFRESH_TOKEN_REQUEST
+                                    value = REFRESH_TOKEN_REQUEST
                             )
                     )
             )
@@ -305,7 +307,7 @@ public class AuthController {
                     description = "Logout successful",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.LOGOUT_SUCCESS
+                                    value = LOGOUT_SUCCESS
                             )
                     )
             ),
@@ -314,7 +316,7 @@ public class AuthController {
                     description = "Invalid or expired refresh token",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.LOGOUT_UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -323,7 +325,7 @@ public class AuthController {
                     description = "User blocked",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.LOGOUT_FORBIDDEN
+                                    value = FORBIDDEN
                             )
                     )
             ),
@@ -333,7 +335,7 @@ public class AuthController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )
@@ -348,7 +350,7 @@ public class AuthController {
                                     implementation = RefreshTokenRequest.class
                             ),
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.REFRESH_TOKEN_REQUEST
+                                    value = REFRESH_TOKEN_REQUEST
                             )
                     )
             )
@@ -377,7 +379,7 @@ public class AuthController {
                     description = "Logged out from all devices",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.LOGOUT_ALL_SUCCESS
+                                    value = LOGOUT_SUCCESS
                             )
                     )
             ),
@@ -386,7 +388,7 @@ public class AuthController {
                     description = "Unauthorized",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -395,7 +397,7 @@ public class AuthController {
                     description = "Internal server error",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )

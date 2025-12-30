@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "64398d23-826e-48a2-945d-781d3a56c5b8",
+    "name": "Blog-PlatForm-API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "id": "4e565665-c1ae-4907-ba4d-5d0ffea6f08b",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"souvanik\",\r\n  \"email\": \"souvanik.saha@example.com\",\r\n  \"password\": \"StrongPass@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/auth/register",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8080/api/v1/auth/register' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"username\": \"souvanik\",\r\n  \"email\": \"souvanik@example.com\",\r\n  \"password\": \"StrongPass@123\"\r\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "id": "47262a5c-5eed-48a3-aa86-4e254aff6a4d",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"souvanik@example.com\",\r\n  \"password\": \"StrongPass@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/auth/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8080/api/v1/auth/login' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"email\": \"souvanik@example.com\",\r\n  \"password\": \"StrongPass@123\"\r\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout All",
+          "id": "5e868d5b-bf58-4e9e-a807-62cebfad0f80",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzb3V2YW5pa0BleGFtcGxlLmNvbSIsImlzcyI6ImF1dGgtc2VydmljZSIsImF1ZCI6ImFwaSIsInVpZCI6IjU4MDc1ZmNjLTcwMTktNGY2Mi05ZjQyLWY5ODkyMDMwZGMzZSIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzY3MDkyMzM2LCJuYmYiOjE3NjcwOTIzMzEsImV4cCI6MTc2NzA5MzIzNn0.jqUev6QvtbeOL_Ao1HC6-cq3bJlOaE_pYbdWBoa42rA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "*/*"
+              }
+            ],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/auth/logout-all",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout-all"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8080/api/v1/auth/logout-all' \\\r\n  -H 'accept: */*' \\\r\n  -d ''"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "id": "a3482aa8-4952-436a-b833-dc7e8aa7b580",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"TEmCCR85tsAlIRqmlMQnevVzVvy1ll9CQS6Q_1UQUFc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8080/api/v1/auth/refresh' \\\r\n  -H 'accept: application/json' \\\r\n  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ODA3NWZjYy03MDE5LTRmNjItOWY0Mi1mOTg5MjAzMGRjM2UiLCJpc3MiOiJhdXRoLXNlcnZpY2UiLCJhdWQiOiJhcGkiLCJlbWFpbCI6InNvdXZhbmlrQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3NjcwOTEwOTUsIm5iZiI6MTc2NzA5MTA5MCwiZXhwIjoxNzY3MDkxOTk1fQ.5lnjuqw0MSDJnniEkifoJKEMlm0iLOqTWaKhWNFRVnw' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"TEmCCR85tsAlIRqmlMQnevVzVvy1ll9CQS6Q_1UQUFc\"\r\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Log Out",
+          "id": "b9072cd2-48b3-46ff-974b-1454cfbbd5b0",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzb3V2YW5pa0BleGFtcGxlLmNvbSIsImlzcyI6ImF1dGgtc2VydmljZSIsImF1ZCI6ImFwaSIsInVpZCI6IjU4MDc1ZmNjLTcwMTktNGY2Mi05ZjQyLWY5ODkyMDMwZGMzZSIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzY3MDkyMzM2LCJuYmYiOjE3NjcwOTIzMzEsImV4cCI6MTc2NzA5MzIzNn0.jqUev6QvtbeOL_Ao1HC6-cq3bJlOaE_pYbdWBoa42rA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "",
+                "value": "",
+                "disabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"Lh0Z3u0ZKpN9ZPpYxFqHcWq9Y8uXk2Rr4mZ0d5QvEoA\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/auth/logout",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8080/api/v1/auth/logout' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ODA3NWZjYy03MDE5LTRmNjItOWY0Mi1mOTg5MjAzMGRjM2UiLCJpc3MiOiJhdXRoLXNlcnZpY2UiLCJhdWQiOiJhcGkiLCJlbWFpbCI6InNvdXZhbmlrQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVVNFUiJdLCJpYXQiOjE3NjcwOTEwOTUsIm5iZiI6MTc2NzA5MTA5MCwiZXhwIjoxNzY3MDkxOTk1fQ.5lnjuqw0MSDJnniEkifoJKEMlm0iLOqTWaKhWNFRVnw' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"refreshToken\": \"Lh0Z3u0ZKpN9ZPpYxFqHcWq9Y8uXk2Rr4mZ0d5QvEoA\"\r\n}'"
+          },
+          "response": []
+        }
+      ],
+      "id": "21cd76c0-366a-48d5-bbca-7060bc5acd98"
+    }
+  ],
+  "variable": [
+    {
+      "id": "d28549b9-a594-49df-b73b-837f825b37f4",
+      "key": "baseURL",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

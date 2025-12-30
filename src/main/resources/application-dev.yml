@@ -24,6 +24,22 @@ app:
       secret: ${APP_SECURITY_JWT_SECRET}
       access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN}
       refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS}
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+      - http://localhost:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Authorization
+      - Content-Type
+    exposed-headers:
+      - Authorization
+    allow-credentials: true
 
 springdoc:
   swagger-ui:

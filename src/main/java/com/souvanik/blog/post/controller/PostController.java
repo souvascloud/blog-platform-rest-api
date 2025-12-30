@@ -1,11 +1,13 @@
 package com.souvanik.blog.post.controller;
 
-import com.souvanik.blog.common.SwaggerExamples;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.api.PageMeta;
 import com.souvanik.blog.post.dto.*;
 import com.souvanik.blog.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.souvanik.blog.common.swagger.CommonSwaggerExamples.FORBIDDEN;
+import static com.souvanik.blog.common.swagger.CommonSwaggerExamples.RESOURCE_NOT_FOUND;
+import static com.souvanik.blog.common.swagger.auth.AuthSwaggerExamples.UNAUTHORIZED;
+import static com.souvanik.blog.common.swagger.post.PostSwaggerExamples.*;
 
 /*
  * Copyright (c) 2025 Souvanik Saha
@@ -52,7 +59,7 @@ public class PostController {
                     description = "Post created successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_CREATE_SUCCESS
+                                    value = POST_CREATE_SUCCESS
                             )
                     )
             ),
@@ -61,7 +68,7 @@ public class PostController {
                     description = "Unauthorized",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             )
@@ -103,7 +110,7 @@ public class PostController {
                     description = "Post fetched successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_FETCH_SUCCESS
+                                    value = POST_FETCH_SUCCESS
                             )
                     )
             ),
@@ -112,7 +119,7 @@ public class PostController {
                     description = "Post not found",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -141,7 +148,7 @@ public class PostController {
                     description = "Posts fetched successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_LIST_SUCCESS
+                                    value = POST_LIST_SUCCESS
                             )
                     )
             )
@@ -160,33 +167,41 @@ public class PostController {
 
     @Operation(
             summary = "Update post",
-            description = "Updates a post. Only the post owner can update it.",
-            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+            description = """
+        Partially updates a post.
+        Only the post owner can update it.
+        Slug is updated ONLY when title changes AND post is in DRAFT state.
+        """,
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Post updated successfully",
-                    content = @io.swagger.v3.oas.annotations.media.Content(
-                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_UPDATE_SUCCESS
-                            )
+                    content = @Content(
+                            examples = @ExampleObject(value = POST_UPDATE_SUCCESS)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "403",
                     description = "Forbidden",
-                    content = @io.swagger.v3.oas.annotations.media.Content(
-                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.FORBIDDEN
-                            )
+                    content = @Content(
+                            examples = @ExampleObject(value = FORBIDDEN)
                     )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Post not found"
             )
     })
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> update(@PathVariable UUID id,
-                                                            @RequestBody @Valid UpdatePostRequest req) {
-        return ResponseEntity.ok(ApiResponse.success(200, service.update(id, req)));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(
+            @PathVariable UUID id,
+            @RequestBody @Valid UpdatePostRequest req
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(200, service.update(id, req))
+        );
     }
 
 
@@ -209,7 +224,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_DELETE_SUCCESS
+                                    value = POST_DELETE_SUCCESS
                             )
                     )
             ),
@@ -219,7 +234,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -229,7 +244,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.FORBIDDEN
+                                    value = FORBIDDEN
                             )
                     )
             ),
@@ -239,7 +254,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -267,7 +282,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.COMMENT_ADD_SUCCESS
+                                    value = COMMENT_ADD_SUCCESS
                             )
                     )
             ),
@@ -276,7 +291,7 @@ public class PostController {
                     description = "Unauthorized",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -285,7 +300,7 @@ public class PostController {
                     description = "Post not found",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -315,7 +330,7 @@ public class PostController {
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.COMMENT_LIST_SUCCESS
+                                    value = COMMENT_LIST_SUCCESS
                             )
                     )
             ),
@@ -324,7 +339,7 @@ public class PostController {
                     description = "Post not found",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -353,7 +368,7 @@ public class PostController {
                     description = "Post liked successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_LIKE_SUCCESS
+                                    value = POST_LIKE_SUCCESS
                             )
                     )
             ),
@@ -362,7 +377,7 @@ public class PostController {
                     description = "Unauthorized",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -371,7 +386,7 @@ public class PostController {
                     description = "Post not found",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -397,7 +412,7 @@ public class PostController {
                     description = "Like removed successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.POST_UNLIKE_SUCCESS
+                                    value = POST_UNLIKE_SUCCESS
                             )
                     )
             ),
@@ -406,7 +421,7 @@ public class PostController {
                     description = "Unauthorized",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -415,7 +430,7 @@ public class PostController {
                     description = "Post not found",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )

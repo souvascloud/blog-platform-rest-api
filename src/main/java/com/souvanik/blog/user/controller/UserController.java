@@ -1,6 +1,5 @@
 package com.souvanik.blog.user.controller;
 
-import com.souvanik.blog.common.SwaggerExamples;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.config.OpenApiConfig;
 import com.souvanik.blog.user.dto.UpdateProfileRequest;
@@ -18,7 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import static com.souvanik.blog.common.swagger.CommonSwaggerExamples.*;
+import static com.souvanik.blog.common.swagger.auth.AuthSwaggerExamples.UNAUTHORIZED;
+import static com.souvanik.blog.common.swagger.user.UserSwaggerExamples.USER_PROFILE_SUCCESS;
+import static com.souvanik.blog.common.swagger.user.UserSwaggerExamples.USER_PROFILE_UPDATE_SUCCESS;
 
 /*
  * Copyright (c) 2025 Souvanik Saha
@@ -52,7 +54,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.USER_PROFILE_SUCCESS
+                                    value = USER_PROFILE_SUCCESS
                             )
                     )
             ),
@@ -62,7 +64,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -72,7 +74,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                                    value = RESOURCE_NOT_FOUND
                             )
                     )
             )
@@ -104,7 +106,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.USER_PROFILE_UPDATE_SUCCESS
+                                    value = USER_PROFILE_UPDATE_SUCCESS
                             )
                     )
             ),
@@ -114,7 +116,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.VALIDATION_ERROR
+                                    value = VALIDATION_ERROR
                             )
                     )
             ),
@@ -124,7 +126,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.UNAUTHORIZED
+                                    value = UNAUTHORIZED
                             )
                     )
             ),
@@ -134,7 +136,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = SwaggerExamples.INTERNAL_SERVER_ERROR
+                                    value = INTERNAL_SERVER_ERROR
                             )
                     )
             )
