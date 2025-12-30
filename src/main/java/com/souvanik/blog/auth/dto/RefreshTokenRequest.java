@@ -15,5 +15,6 @@ import lombok.Getter;
 public class RefreshTokenRequest {
 
     @Schema(description = "Valid refresh token", example = "b7a3c2f1-2e8a-4d4e-9d77-3a2f1d8e9b10")
+    @NotBlank
     private String refreshToken;
 }

@@ -56,6 +56,7 @@ public class ApiResponse<T> {
                 .timestamp(Instant.now())
                 .status(status)
                 .success(false)
+                .data(null)
                 .error(error)
                 .build();
     }

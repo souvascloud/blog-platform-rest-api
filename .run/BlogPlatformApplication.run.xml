@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BlogPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <envs>
-      <env name="APP_SECURITY_JWT_ACCESS_EXP_MIN" value="900000" />
-      <env name="APP_SECURITY_JWT_REFRESH_EXP_DAYS" value="604800000" />
+      <env name="APP_SECURITY_JWT_ACCESS_EXP_MIN" value="15" />
+      <env name="APP_SECURITY_JWT_REFRESH_EXP_DAYS" value="7" />
       <env name="APP_SECURITY_JWT_SECRET" value="Crazy Fredrick bought many very exquisite opal jewels just to flex" />
       <env name="SPRING_DATASOURCE_PASSWORD" value="postgres" />
       <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://localhost:5432/blog_db" />

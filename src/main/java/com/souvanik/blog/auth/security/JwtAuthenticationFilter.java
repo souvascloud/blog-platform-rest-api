@@ -1,8 +1,15 @@
 package com.souvanik.blog.auth.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.souvanik.blog.auth.security.service.JwtService;
+import com.souvanik.blog.auth.security.util.CustomUserPrincipal;
+import com.souvanik.blog.common.api.ApiError;
+import com.souvanik.blog.common.api.ApiResponse;
+import com.souvanik.blog.common.exception.ErrorCode;
 import com.souvanik.blog.user.model.User;
 import com.souvanik.blog.user.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,17 +40,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository, ObjectMapper objectMapper) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+
+        return path.startsWith("/api/v1/auth/")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/actuator");
+    }
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -52,27 +72,78 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        String email = jwtService.extractUsername(token);
+        try {
+            String token = authHeader.substring(7);
+            String email = jwtService.extractUsername(token);
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userRepository.findByEmail(email).orElse(null);
+            if (email != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (user != null && jwtService.isTokenValid(token, user)) {
-                List<GrantedAuthority> authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
-                );
+                User user = userRepository.findByEmail(email).orElse(null);
 
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(user.getEmail(), null, authorities);
+                if (user != null && jwtService.isTokenValid(token, user)) {
 
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    List<GrantedAuthority> authorities = List.of(
+                            new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                    );
 
-                logger.debug("Authenticated user email={}", email);
+                    CustomUserPrincipal principal =
+                            new CustomUserPrincipal(
+                                    user.getId(),
+                                    user.getEmail(),
+                                    authorities
+                            );
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    principal,
+                                    null,
+                                    authorities
+                            );
+
+                    auth.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
+
+            filterChain.doFilter(request, response);
+
+        } catch (ExpiredJwtException ex) {
+            logger.debug("JWT expired: {}", ex.getMessage());
+            handleJwtError(response,
+                    ErrorCode.TOKEN_EXPIRED.name(),
+                    "JWT token has expired");
+            return;
+        } catch (JwtException | IllegalArgumentException ex) {
+            logger.debug("JWT invalid: {}", ex.getMessage());
+            handleJwtError(response,
+                    ErrorCode.TOKEN_INVALID.name(),
+                    "Invalid JWT token");
+            return;
+        }
+    }
+
+
+    private void handleJwtError(HttpServletResponse response, String code, String message) throws IOException {
+        if (response.isCommitted()) {
+            return;
         }
 
-        filterChain.doFilter(request, response);
+        ApiError error = ApiError.builder()
+                .code(code)
+                .message(message)
+                .build();
+
+        ApiResponse<Void> body =
+                ApiResponse.error(HttpServletResponse.SC_UNAUTHORIZED, error);
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+
+        objectMapper.writeValue(response.getOutputStream(), body);
     }
 }

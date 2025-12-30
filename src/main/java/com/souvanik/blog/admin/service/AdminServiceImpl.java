@@ -1,9 +1,10 @@
-package com.souvanik.blog.admin.service;
+package com.souvanik.blog.admin.service.impl;
 
 import com.souvanik.blog.admin.dto.AdminStatsResponse;
 import com.souvanik.blog.admin.dto.UserAdminResponse;
-import com.souvanik.blog.common.exception.ErrorCode;
+import com.souvanik.blog.admin.service.AdminService;
 import com.souvanik.blog.common.exception.ResourceNotFoundException;
+import com.souvanik.blog.common.exception.ErrorCode;
 import com.souvanik.blog.post.model.Comment;
 import com.souvanik.blog.post.model.Post;
 import com.souvanik.blog.post.model.PostStatus;
@@ -28,7 +29,6 @@ import java.util.UUID;
  * Copyright (c) 2025 Souvanik Saha
  *
  * Licensed under the MIT License.
- * https://opensource.org/licenses/MIT
  */
 @Service
 @RequiredArgsConstructor
@@ -42,67 +42,101 @@ public class AdminServiceImpl implements AdminService {
     private final CommentRepository commentRepo;
     private final PostLikeRepository likeRepo;
 
+    // =========================================================
+    // USERS
+    // =========================================================
+
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public Page<UserAdminResponse> listUsers(Pageable pageable) {
+        logger.debug("Listing users page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
         return userRepo.findAll(pageable).map(this::toUserAdmin);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void blockUser(UUID userId) {
-        User u = userRepo.findById(userId)
+        User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
-        u.setStatus(UserStatus.BLOCKED);
+
+        if (user.getStatus() == UserStatus.BLOCKED) {
+            logger.debug("User id={} already blocked", userId);
+            return;
+        }
+
+        user.setStatus(UserStatus.BLOCKED);
         logger.info("Blocked user id={}", userId);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void unblockUser(UUID userId) {
-        User u = userRepo.findById(userId)
+        User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
-        u.setStatus(UserStatus.ACTIVE);
+
+        if (user.getStatus() == UserStatus.ACTIVE) {
+            logger.debug("User id={} already active", userId);
+            return;
+        }
+
+        user.setStatus(UserStatus.ACTIVE);
         logger.info("Unblocked user id={}", userId);
     }
+
+    // =========================================================
+    // POSTS
+    // =========================================================
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void changePostStatus(UUID postId, PostStatus status) {
-        Post p = postRepo.findById(postId)
+        Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorCode.RESOURCE_NOT_FOUND, "Post not found"));
-        p.setStatus(status);
-        logger.info("Changed post id={} status={}", postId, status);
+
+        post.setStatus(status);
+        logger.info("Admin changed post id={} status={}", postId, status);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void deletePost(UUID postId) {
-        Post p = postRepo.findById(postId)
+        Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorCode.RESOURCE_NOT_FOUND, "Post not found"));
-        postRepo.delete(p);
+
+        postRepo.delete(post);
         logger.warn("Admin deleted post id={}", postId);
     }
+
+    // =========================================================
+    // COMMENTS
+    // =========================================================
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteComment(UUID commentId) {
-        Comment c = commentRepo.findById(commentId)
+        Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorCode.RESOURCE_NOT_FOUND, "Comment not found"));
-        commentRepo.delete(c);
+
+        commentRepo.delete(comment);
         logger.warn("Admin deleted comment id={}", commentId);
     }
+
+    // =========================================================
+    // STATS
+    // =========================================================
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public AdminStatsResponse stats() {
+        logger.debug("Fetching admin platform statistics");
+
         return AdminStatsResponse.builder()
                 .totalUsers(userRepo.count())
                 .totalPosts(postRepo.count())
@@ -111,14 +145,18 @@ public class AdminServiceImpl implements AdminService {
                 .build();
     }
 
-    private UserAdminResponse toUserAdmin(User u) {
+    // =========================================================
+    // MAPPERS
+    // =========================================================
+
+    private UserAdminResponse toUserAdmin(User user) {
         return UserAdminResponse.builder()
-                .id(u.getId())
-                .username(u.getUsername())
-                .email(u.getEmail())
-                .role(u.getRole())
-                .status(u.getStatus())
-                .createdAt(u.getCreatedAt())
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

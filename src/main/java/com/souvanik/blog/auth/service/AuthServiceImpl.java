@@ -18,12 +18,17 @@ import com.souvanik.blog.user.model.UserStatus;
 import com.souvanik.blog.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
+
+import static com.souvanik.blog.auth.security.util.SecurityUtil.DUMMY_PASSWORD_HASH;
 
 /*
  * Copyright (c) 2025 Souvanik Saha
@@ -36,7 +41,6 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
-
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
@@ -84,15 +88,18 @@ public class AuthServiceImpl implements AuthService {
         logger.info("Login attempt email={}", request.getEmail());
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException(
-                        ErrorCode.INVALID_CREDENTIALS, "Invalid email or password"));
+                .orElse(null);
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        String hashToCheck = (user != null)
+                ? user.getPasswordHash()
+                : DUMMY_PASSWORD_HASH;
+
+        if (!passwordEncoder.matches(request.getPassword(), hashToCheck)) {
             throw new UnauthorizedException(
                     ErrorCode.INVALID_CREDENTIALS, "Invalid email or password");
         }
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        if (Objects.requireNonNull(user).getStatus() != UserStatus.ACTIVE) {
             throw new ForbiddenException(ErrorCode.USER_BLOCKED, "User is not active");
         }
 
@@ -111,43 +118,64 @@ public class AuthServiceImpl implements AuthService {
             throw new UnauthorizedException(
                     ErrorCode.TOKEN_EXPIRED, "Refresh token expired or revoked");
         }
-
+        token.setRevoked(true);
+        refreshTokenRepository.save(token);
         return issueTokens(token.getUser());
     }
 
+
+    @PreAuthorize("isAuthenticated()")
     @Override
     public void logout(String refreshToken) {
         logger.info("Logout using refresh token");
 
         refreshTokenRepository.findByToken(refreshToken)
                 .ifPresent(token -> {
-                    token.setRevoked(true);
-                    refreshTokenRepository.save(token);
+                    if (token.getExpiresAt().isBefore(Instant.now())) {
+                        logger.debug("Refresh token already expired");
+                    }
+                    if (!token.isRevoked()) {
+                        token.setRevoked(true);
+                        refreshTokenRepository.save(token);
+                    }
                 });
+    }
+
+    @PreAuthorize(
+            "isAuthenticated() and " +
+                    "(#userId == principal.userId or hasRole('ADMIN'))"
+    )
+    @Override
+    public void logoutAll(UUID userId) {
+        logger.info("Logout all sessions for userId={}", userId);
+
+        int revokedCount = refreshTokenRepository.revokeAllByUserId(userId);
+
+        logger.debug("Revoked {} refresh tokens for userId={}", revokedCount, userId);
     }
 
     private AuthResponse issueTokens(User user) {
         String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken();
+        Instant refreshExpiry = Instant.now()
+                .plus(Duration.ofDays(props.getRefreshTokenExpiryDays()));
 
-        Instant refreshExpiry =
-                Instant.now().plusSeconds(props.getRefreshTokenExpiryDays() * 24 * 3600);
-
-        RefreshToken refreshToken = RefreshToken.builder()
+        RefreshToken refreshTokenToSave = RefreshToken.builder()
                 .user(user)
-                .token(UUID.randomUUID().toString())
+                .token(refreshToken)
                 .expiresAt(refreshExpiry)
                 .revoked(false)
                 .build();
 
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshTokenToSave);
 
         logger.info("Issued tokens for userId={}", user.getId());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken.getToken())
+                .refreshToken(refreshTokenToSave.getToken())
                 .tokenType("Bearer")
-                .expiresIn(props.getAccessTokenExpiryMinutes() * 60)
+                .expiresIn(Duration.ofMinutes(props.getAccessTokenExpiryMinutes()).toSeconds())
                 .build();
     }
 }

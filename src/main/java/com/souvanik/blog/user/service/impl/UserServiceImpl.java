@@ -36,12 +36,14 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("isAuthenticated()")
     @Override
     public UserResponse getCurrentUser() {
-        String email = SecurityUtil.getCurrentUsername();
-        logger.debug("Fetching current user profile for email={}", email);
 
-        User user = userRepository.findByEmail(email)
+        UUID userId = SecurityUtil.getCurrentUserId();
+        logger.debug("Fetching current user profile for userId={}", userId);
+
+        assert userId != null;
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    logger.warn("Authenticated user not found in DB for email={}", email);
+                    logger.warn("Authenticated user not found in DB for userId={}", userId);
                     return new ResourceNotFoundException(
                             ErrorCode.RESOURCE_NOT_FOUND,
                             "Current user not found");
@@ -54,12 +56,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse updateCurrentUser(UpdateProfileRequest request) {
-        String email = SecurityUtil.getCurrentUsername();
-        logger.debug("Updating current user profile for email={}", email);
 
-        User user = userRepository.findByEmail(email)
+        UUID userId = SecurityUtil.getCurrentUserId();
+        logger.debug("Updating current user profile for email={}", userId);
+
+        assert userId != null;
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    logger.warn("Authenticated user not found for update email={}", email);
+                    logger.warn("Authenticated user not found for update userId={}", userId);
                     return new ResourceNotFoundException(
                             ErrorCode.RESOURCE_NOT_FOUND,
                             "Current user not found");
@@ -67,9 +71,10 @@ public class UserServiceImpl implements UserService {
 
         user.setBio(request.getBio());
 
-        logger.info("Updated profile for current user email={}", email);
+        logger.info("Updated profile for current user userId={}", userId);
         return toResponse(user);
     }
+
 
     private UserResponse toResponse(User user) {
         return UserResponse.builder()

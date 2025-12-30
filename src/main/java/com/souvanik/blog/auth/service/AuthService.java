@@ -5,6 +5,8 @@ import com.souvanik.blog.auth.dto.LoginRequest;
 import com.souvanik.blog.auth.dto.RefreshTokenRequest;
 import com.souvanik.blog.auth.dto.RegisterRequest;
 
+import java.util.UUID;
+
 /*
  * Copyright (c) 2025 Souvanik Saha
  *
@@ -19,5 +21,7 @@ public interface AuthService {
     AuthResponse refresh(RefreshTokenRequest request);
 
     void logout(String refreshToken);
+
+    void logoutAll(UUID userId);
 
 }

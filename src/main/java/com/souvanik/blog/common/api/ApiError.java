@@ -28,7 +28,7 @@ public class ApiError {
 
     @Schema(example = "2025-01-01T10:15:30Z",
             description = "Time when the error occurred in UTC")
-    private final Instant timestamp;
+    private final Instant timestamp = Instant.now();
 
 
     @Schema(description = "Additional error details",

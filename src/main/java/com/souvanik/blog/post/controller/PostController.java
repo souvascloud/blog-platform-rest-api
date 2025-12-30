@@ -1,5 +1,6 @@
 package com.souvanik.blog.post.controller;
 
+import com.souvanik.blog.common.SwaggerExamples;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.api.PageMeta;
 import com.souvanik.blog.post.dto.*;
@@ -42,45 +43,28 @@ public class PostController {
 
     @Operation(
             summary = "Create a new post",
-            description = """
-        Creates a new blog post for the authenticated user.
-        The post owner is derived from the JWT token.
-        """
+            description = "Creates a new blog post for the authenticated user.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Post created successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(
-                                    implementation = com.souvanik.blog.post.dto.PostResponse.class
-                            ),
                             examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                                    value = """
-                {
-                  "timestamp": "2025-01-01T11:00:00Z",
-                  "status": 200,
-                  "success": true,
-                  "data": {
-                    "id": "b1b2c3d4-1234-5678-9999-acde12345678",
-                    "title": "Spring Boot REST API Best Practices",
-                    "slug": "spring-boot-rest-api-best-practices",
-                    "content": "In this post we explore REST API design...",
-                    "status": "PUBLISHED",
-                    "author": "souvanik",
-                    "tags": ["spring", "java", "backend"],
-                    "likes": 0,
-                    "createdAt": "2025-01-01T10:59:30Z"
-                  },
-                  "error": null,
-                  "meta": null
-                }
-                """
+                                    value = SwaggerExamples.POST_CREATE_SUCCESS
                             )
                     )
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation error"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.UNAUTHORIZED
+                            )
+                    )
+            )
     })
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> create(@io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -108,21 +92,30 @@ public class PostController {
 
 
 
+
     @Operation(
             summary = "Get published post by slug",
-            description = "Returns a published post identified by its unique slug."
+            description = "Fetches a published post using its slug."
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Post fetched successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(
-                                    implementation = com.souvanik.blog.post.dto.PostResponse.class
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_FETCH_SUCCESS
                             )
                     )
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Post not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
+            )
     })
     @GetMapping("/{slug}")
     public ResponseEntity<ApiResponse<PostResponse>> get(@PathVariable String slug) {
@@ -145,7 +138,12 @@ public class PostController {
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "Posts fetched successfully"
+                    description = "Posts fetched successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_LIST_SUCCESS
+                            )
+                    )
             )
     })
     @GetMapping
@@ -162,24 +160,28 @@ public class PostController {
 
     @Operation(
             summary = "Update post",
-            description = """
-        Updates an existing post.
-        Only the post owner can update the post.
-        """
+            description = "Updates a post. Only the post owner can update it.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Post updated successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(
-                                    implementation = com.souvanik.blog.post.dto.PostResponse.class
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_UPDATE_SUCCESS
                             )
                     )
             ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Post not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.FORBIDDEN
+                            )
+                    )
+            )
     })
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PostResponse>> update(@PathVariable UUID id,
@@ -192,29 +194,54 @@ public class PostController {
 
 
 
-    @Operation(
+    @io.swagger.v3.oas.annotations.Operation(
             summary = "Delete post",
             description = """
         Deletes an existing post.
         Only the post owner or an admin can delete the post.
-        """
+        """,
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "Post deleted successfully"
+                    description = "Post deleted successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_DELETE_SUCCESS
+                            )
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized"
+                    description = "Unauthorized",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.UNAUTHORIZED
+                            )
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden"
+                    description = "Forbidden",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.FORBIDDEN
+                            )
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "Post not found"
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
             )
     })
     @DeleteMapping("/{id}")
@@ -228,26 +255,56 @@ public class PostController {
 
 
 
-    @Operation(
+    @io.swagger.v3.oas.annotations.Operation(
             summary = "Add comment to post",
-            description = "Adds a comment to the specified post by the authenticated user."
+            description = "Adds a comment to the specified post by the authenticated user.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Comment added successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Post not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Comment added successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.COMMENT_ADD_SUCCESS
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.UNAUTHORIZED
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
+            )
     })
     @PostMapping("/{id}/comments")
-    public ResponseEntity<ApiResponse<CommentResponse>> comment(@PathVariable UUID id,
-                                                                @RequestBody @Valid CreateCommentRequest req) {
-        return ResponseEntity.ok(ApiResponse.success(200, service.addComment(id, req)));
+    public ResponseEntity<ApiResponse<CommentResponse>> comment(
+            @PathVariable UUID id,
+            @RequestBody @Valid CreateCommentRequest req) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(200, service.addComment(id, req))
+        );
     }
 
 
 
 
 
-    @Operation(
+    @io.swagger.v3.oas.annotations.Operation(
             summary = "Get comments for a post",
             description = "Returns all comments associated with the specified post."
     )
@@ -256,33 +313,68 @@ public class PostController {
                     responseCode = "200",
                     description = "Comments fetched successfully",
                     content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(
-                                    implementation = com.souvanik.blog.post.dto.CommentResponse.class
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.COMMENT_LIST_SUCCESS
                             )
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "Post not found"
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
             )
     })
     @GetMapping("/{id}/comments")
-    public ResponseEntity<ApiResponse<List<CommentResponse>>> comments(@PathVariable UUID id) {
-        return ResponseEntity.ok(ApiResponse.success(200, service.listComments(id)));
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> comments(
+            @PathVariable UUID id) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(200, service.listComments(id))
+        );
     }
 
 
 
 
 
-    @Operation(
+    @io.swagger.v3.oas.annotations.Operation(
             summary = "Like a post",
-            description = "Adds a like to the specified post by the authenticated user."
+            description = "Adds a like to the specified post by the authenticated user.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Post liked successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Post not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Post liked successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_LIKE_SUCCESS
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.UNAUTHORIZED
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
+            )
     })
     @PostMapping("/{id}/like")
     public ResponseEntity<ApiResponse<Void>> like(@PathVariable UUID id) {
@@ -294,22 +386,38 @@ public class PostController {
 
 
 
-    @Operation(
+    @io.swagger.v3.oas.annotations.Operation(
             summary = "Remove like from post",
-            description = "Removes the authenticated user's like from the specified post."
+            description = "Removes the authenticated user's like from the specified post.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "Like removed successfully"
+                    description = "Like removed successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.POST_UNLIKE_SUCCESS
+                            )
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized"
+                    description = "Unauthorized",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.UNAUTHORIZED
+                            )
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "Post not found"
+                    description = "Post not found",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = SwaggerExamples.RESOURCE_NOT_FOUND
+                            )
+                    )
             )
     })
     @DeleteMapping("/{id}/like")
