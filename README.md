@@ -234,5 +234,5 @@ Senior Software Engineer
 
 Passionate about backend systems, design, and clean code.
 
-🔗 LinkedIn:  
-https://www.linkedin.com/in/souvanik-saha-7172a810a/
+LinkedIn:  
+https://www.linkedin.com/in/souvanik-saha
