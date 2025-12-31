@@ -227,6 +227,165 @@ JWT_REFRESH_TOKEN_EXPIRY=7d
 
 ---
 
+##  Run the Project with Docker (Step-by-Step)
+
+This project uses **Docker**, **Docker Compose**, and **Flyway** to run the **Spring Boot backend** and **PostgreSQL 16** locally.
+
+Database tables are **automatically created and versioned by Flyway migrations** on application startup.
+
+---
+
+###  Prerequisites
+
+Make sure you have:
+
+- Docker
+- Docker Compose 
+- Git
+
+Check versions:
+
+```bash
+ docker --version
+ docker compose version
+```
+
+---
+
+###  Step 1: Clone the Repository
+
+```bash
+ git clone https://github.com/souvascloud/blog-platform-rest-api
+ cd blog-platform
+```
+
+---
+
+### Step 2: Build the Application JAR
+
+```bash
+ mvn clean package
+```
+
+This creates the executable JAR in the `target/` directory.
+
+---
+
+### Step 3: Build Image & Start Containers
+
+```bash
+ docker compose up --build
+```
+
+This will:
+
+- Build the Spring Boot Docker image
+- Start PostgreSQL 16 in a container
+- Wait for PostgreSQL to be ready
+- Start the Spring Boot application
+- Run Flyway migrations automatically
+- Create required database tables
+
+No manual SQL setup is needed.
+
+---
+
+###  Step 4: Access the Application
+
+- **API Base URL**  
+   http://localhost:8080
+
+- **Swagger UI**  
+   http://localhost:8080/swagger-ui.html
+
+---
+
+###  Step 5: Verify Database Migration (Optional)
+
+Exec into PostgreSQL container:
+
+```bash
+ docker exec -it blog-postgres psql -U blog_user -d blog_db
+```
+
+Inside PostgreSQL:
+
+```sql
+\dt
+```
+
+You should see:
+- Application tables
+- `flyway_schema_history` table
+
+Exit:
+
+```sql
+\q
+```
+
+---
+
+###  Step 6: Exec into Containers (Optional)
+
+Application container:
+
+```bash
+ docker exec -it blog-backend sh
+```
+
+PostgreSQL container:
+
+```bash
+ docker exec -it blog-postgres psql -U blog_user -d blog_db
+```
+
+---
+
+###  Step 7: Stop the Application
+
+```bash
+ docker compose down
+```
+
+---
+
+###  Optional: Reset Database
+
+```bash
+ docker compose down -v
+```
+
+This will delete all tables and data.  
+Flyway will recreate the schema on the next startup.
+
+---
+
+## Notes
+
+- Database schema is managed by Flyway
+- Tables are created automatically on startup
+- PostgreSQL runs fully inside Docker
+- No local database setup is required
+- Configuration is environment-driven
+- PostgreSQL always starts before the application
+
+---
+
+## Summary
+
+```bash
+    git clone ...
+    cd blog-platform
+    mvn clean package
+    docker compose up --build
+```
+
+**Flyway handles the database.  
+Docker handles the infrastructure.**
+
+---
+
 ##  Author
 
 **Souvanik Saha**  
