@@ -264,7 +264,7 @@ Check versions:
 ### Step 2: Build the Application JAR
 
 ```bash
- mvn clean package
+ ./mvnw clean package
 ```
 
 This creates the executable JAR in the `target/` directory.
