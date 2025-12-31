@@ -377,8 +377,8 @@ Flyway will recreate the schema on the next startup.
 
 ```bash
     git clone ...
-    cd blog-platform
-    mvn clean package
+    cd blog-platform-rest-api
+    ./mvnw clean package
     docker compose up --build
 ```
 
