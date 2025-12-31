@@ -1,23 +1,15 @@
-FROM maven:3.9.9-eclipse-temurin-17 AS build
-
+FROM eclipse-temurin:17-jre AS runtime
 WORKDIR /app
 
-# Copy pom.xml first for dependency caching
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
-# Copy source and build
-COPY src ./src
-RUN mvn clean package -DskipTests
-
+COPY --from=build /app/target/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM eclipse-temurin:17-jre
-
 WORKDIR /app
 
-# Copy only the built jar
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=runtime dependencies/ ./
+COPY --from=runtime spring-boot-loader/ ./
+COPY --from=runtime snapshot-dependencies/ ./
+COPY --from=runtime application/ ./
 
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
