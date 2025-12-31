@@ -1,14 +1,31 @@
 spring:
   application:
     name: blog-platform
+
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
 
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE}
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: never
 
   jackson:
     serialization:
@@ -27,4 +44,35 @@ logging:
   level:
     root: INFO
     com.souvanik.blog: DEBUG
+
+app:
+  security:
+    jwt:
+      secret: ${APP_SECURITY_JWT_SECRET}
+      access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN}
+      refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS}
+
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+      - http://localhost:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Authorization
+      - Content-Type
+    exposed-headers:
+      - Authorization
+    allow-credentials: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
 
