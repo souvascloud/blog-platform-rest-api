@@ -124,22 +124,42 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    @PreAuthorize("isAuthenticated()")
     @Override
     public void logout(String refreshToken) {
         logger.info("Logout using refresh token");
 
-        refreshTokenRepository.findByToken(refreshToken)
-                .ifPresent(token -> {
-                    if (token.getExpiresAt().isBefore(Instant.now())) {
-                        logger.debug("Refresh token already expired");
-                    }
-                    if (!token.isRevoked()) {
-                        token.setRevoked(true);
-                        refreshTokenRepository.save(token);
-                    }
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> {
+                    logger.debug("Refresh token not found");
+                    return new UnauthorizedException(
+                            ErrorCode.INVALID_REFRESH_TOKEN,
+                            "Invalid refresh token"
+                    );
                 });
+
+            if (token.isRevoked()) {
+                logger.debug("Refresh token already revoked");
+                throw new UnauthorizedException(
+                        ErrorCode.INVALID_REFRESH_TOKEN,
+                        "Refresh token has been revoked"
+                );
+            }
+
+            if (token.getExpiresAt().isBefore(Instant.now())) {
+                logger.debug("Refresh token expired");
+                throw new UnauthorizedException(
+                        ErrorCode.REFRESH_TOKEN_EXPIRED,
+                        "Refresh token has expired"
+                );
+            }
+
+        token.setRevoked(true);
+        refreshTokenRepository.save(token);
+
+        logger.info("Refresh token revoked successfully");
     }
+
+
 
     @PreAuthorize(
             "isAuthenticated() and " +
@@ -153,6 +173,8 @@ public class AuthServiceImpl implements AuthService {
 
         logger.debug("Revoked {} refresh tokens for userId={}", revokedCount, userId);
     }
+
+
 
     private AuthResponse issueTokens(User user) {
         String accessToken = jwtService.generateAccessToken(user);

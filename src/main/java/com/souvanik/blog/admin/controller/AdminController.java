@@ -1,6 +1,7 @@
 package com.souvanik.blog.admin.controller;
 
 import com.souvanik.blog.admin.dto.AdminStatsResponse;
+import com.souvanik.blog.admin.dto.UpdateUserRoleRequest;
 import com.souvanik.blog.admin.dto.UserAdminResponse;
 import com.souvanik.blog.admin.service.AdminService;
 import com.souvanik.blog.common.api.ApiResponse;
@@ -8,6 +9,7 @@ import com.souvanik.blog.common.api.PageMeta;
 import com.souvanik.blog.post.model.PostStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -223,5 +225,35 @@ public class AdminController {
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<AdminStatsResponse>> stats() {
         return ResponseEntity.ok(ApiResponse.success(200, adminService.stats()));
+    }
+
+
+
+    @Operation(
+            summary = "Update user role",
+            description = "Updates the role of a user. Only admins can change user roles.",
+            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "User role updated successfully",
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = ADMIN_USER_ROLE_UPDATE_SUCCESS
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid role"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PatchMapping("/users/{id}/role")
+    public ResponseEntity<ApiResponse<Void>> updateUserRole(
+            @PathVariable UUID id,
+            @RequestBody @Valid UpdateUserRoleRequest request) {
+
+        adminService.updateUserRole(id, request.getRole());
+        return ResponseEntity.ok(ApiResponse.success(200, null));
     }
 }

@@ -12,6 +12,7 @@ import lombok.Getter;
  * Licensed under the MIT License.
  * https://opensource.org/licenses/MIT
  */
+
 @Schema(description = "Request payload for user login")
 @Getter
 public class LoginRequest {

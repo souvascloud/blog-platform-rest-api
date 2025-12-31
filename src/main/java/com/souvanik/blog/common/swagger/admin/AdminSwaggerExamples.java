@@ -112,4 +112,15 @@ public class AdminSwaggerExamples {
           "meta": null
         }
         """;
+
+    public static final String ADMIN_USER_ROLE_UPDATE_SUCCESS = """
+    {
+      "timestamp": "2025-01-01T10:15:30Z",
+      "status": 200,
+      "success": true,
+      "data": null,
+      "error": null,
+      "meta": null
+    }
+    """;
 }

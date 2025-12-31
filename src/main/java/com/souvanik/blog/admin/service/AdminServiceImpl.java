@@ -11,6 +11,7 @@ import com.souvanik.blog.post.model.PostStatus;
 import com.souvanik.blog.post.repository.CommentRepository;
 import com.souvanik.blog.post.repository.PostLikeRepository;
 import com.souvanik.blog.post.repository.PostRepository;
+import com.souvanik.blog.user.model.Role;
 import com.souvanik.blog.user.model.User;
 import com.souvanik.blog.user.model.UserStatus;
 import com.souvanik.blog.user.repository.UserRepository;
@@ -143,6 +144,23 @@ public class AdminServiceImpl implements AdminService {
                 .totalComments(commentRepo.count())
                 .totalLikes(likeRepo.count())
                 .build();
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateUserRole(UUID userId, Role role) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCode.RESOURCE_NOT_FOUND, "User not found"
+                ));
+
+        if (user.getRole() == role) {
+            logger.debug("User id={} already has role={}", userId, role);
+            return;
+        }
+
+        user.setRole(role);
+        logger.info("Updated role for user id={} to {}", userId, role);
     }
 
     // =========================================================

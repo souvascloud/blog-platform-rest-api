@@ -3,6 +3,7 @@ package com.souvanik.blog.admin.service;
 import com.souvanik.blog.admin.dto.AdminStatsResponse;
 import com.souvanik.blog.admin.dto.UserAdminResponse;
 import com.souvanik.blog.post.model.PostStatus;
+import com.souvanik.blog.user.model.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,4 +30,6 @@ public interface AdminService {
     void deleteComment(UUID commentId);
 
     AdminStatsResponse stats();
+
+    void updateUserRole(UUID userId, Role role);
 }

@@ -35,5 +35,8 @@ public enum ErrorCode {
 
     // Like
     ALREADY_LIKED,
-    NOT_LIKED
+    NOT_LIKED ,
+
+    INVALID_REFRESH_TOKEN,
+    REFRESH_TOKEN_EXPIRED
 }
