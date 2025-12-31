@@ -285,6 +285,7 @@ This will:
 - Start the Spring Boot application
 - Run Flyway migrations automatically
 - Create required database tables
+- For testing purposes, an initial admin user is created using Flyway. default password is Admin@123A
 
 No manual SQL setup is needed.
 
