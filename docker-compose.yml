@@ -31,7 +31,7 @@ services:
       SPRING_DATASOURCE_USERNAME: blog_user
       SPRING_DATASOURCE_PASSWORD: blog_password
 
-      APP_SECURITY_JWT_SECRET: dev-secret
+      APP_SECURITY_JWT_SECRET: Crazy Fredrick bought many very exquisite opal jewels just to flex
       APP_SECURITY_JWT_ACCESS_EXP_MIN: 15
       APP_SECURITY_JWT_REFRESH_EXP_DAYS: 7
 
