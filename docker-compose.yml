@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./blog-platform-data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U blog_user"]
       interval: 10s
@@ -34,6 +34,3 @@ services:
       APP_SECURITY_JWT_SECRET: Crazy Fredrick bought many very exquisite opal jewels just to flex
       APP_SECURITY_JWT_ACCESS_EXP_MIN: 15
       APP_SECURITY_JWT_REFRESH_EXP_DAYS: 7
-
-volumes:
-  postgres_data:
