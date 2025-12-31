@@ -256,7 +256,7 @@ Check versions:
 
 ```bash
  git clone https://github.com/souvascloud/blog-platform-rest-api
- cd blog-platform
+ cd blog-platform-rest-api
 ```
 
 ---
