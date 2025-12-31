@@ -13,7 +13,7 @@ services:
     volumes:
       - ./blog-platform-data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U blog_user -d blog_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blog_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,8 +28,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/blog_db
-      SPRING_DATASOURCE_USERNAME: blog_user
-      SPRING_DATASOURCE_PASSWORD: blog_password
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
 
       APP_SECURITY_JWT_SECRET: Crazy Fredrick bought many very exquisite opal jewels just to flex
       APP_SECURITY_JWT_ACCESS_EXP_MIN: 15
