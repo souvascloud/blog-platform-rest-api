@@ -16,6 +16,8 @@ import com.souvanik.blog.user.model.Role;
 import com.souvanik.blog.user.model.User;
 import com.souvanik.blog.user.model.UserStatus;
 import com.souvanik.blog.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,23 +46,26 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final CookieService cookieService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProperties props;
 
     public AuthServiceImpl(UserRepository userRepository,
                            RefreshTokenRepository refreshTokenRepository,
                            JwtService jwtService,
+                           CookieService cookieService,
                            PasswordEncoder passwordEncoder,
                            JwtProperties props) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
+        this.cookieService = cookieService;
         this.passwordEncoder = passwordEncoder;
         this.props = props;
     }
 
     @Override
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request , HttpServletResponse response) {
         logger.info("Registering new user email={}", request.getEmail());
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -80,11 +85,11 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        return issueTokens(user);
+        return issueTokens(user ,response);
     }
 
     @Override
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request , HttpServletResponse response) {
         logger.info("Login attempt email={}", request.getEmail());
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -103,60 +108,65 @@ public class AuthServiceImpl implements AuthService {
             throw new ForbiddenException(ErrorCode.USER_BLOCKED, "User is not active");
         }
 
-        return issueTokens(user);
+        return issueTokens(user , response);
     }
 
-    @Override
-    public AuthResponse refresh(RefreshTokenRequest request) {
-        logger.debug("Refreshing token");
+    public AuthResponse refresh(HttpServletRequest request,
+                                HttpServletResponse response) {
 
-        RefreshToken token = refreshTokenRepository.findByToken(request.getRefreshToken())
-                .orElseThrow(() -> new UnauthorizedException(
-                        ErrorCode.TOKEN_INVALID, "Invalid refresh token"));
+        logger.debug("Refreshing access token");
 
-        if (token.isRevoked() || token.getExpiresAt().isBefore(Instant.now())) {
+        String refreshToken = cookieService.extract(request);
+
+        if (refreshToken == null) {
             throw new UnauthorizedException(
-                    ErrorCode.TOKEN_EXPIRED, "Refresh token expired or revoked");
+                    ErrorCode.TOKEN_INVALID,
+                    "Refresh token missing");
         }
-        token.setRevoked(true);
-        refreshTokenRepository.save(token);
-        return issueTokens(token.getUser());
-    }
-
-
-    @Override
-    public void logout(String refreshToken) {
-        logger.info("Logout using refresh token");
 
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> {
-                    logger.debug("Refresh token not found");
-                    return new UnauthorizedException(
-                            ErrorCode.INVALID_REFRESH_TOKEN,
-                            "Invalid refresh token"
-                    );
-                });
+                .orElseThrow(() -> new UnauthorizedException(
+                        ErrorCode.TOKEN_INVALID,
+                        "Invalid refresh token"));
 
-            if (token.isRevoked()) {
-                logger.debug("Refresh token already revoked");
-                throw new UnauthorizedException(
-                        ErrorCode.INVALID_REFRESH_TOKEN,
-                        "Refresh token has been revoked"
-                );
-            }
+        if (token.isRevoked()) {
+            throw new UnauthorizedException(
+                    ErrorCode.TOKEN_EXPIRED,
+                    "Refresh token revoked");
+        }
 
-            if (token.getExpiresAt().isBefore(Instant.now())) {
-                logger.debug("Refresh token expired");
-                throw new UnauthorizedException(
-                        ErrorCode.REFRESH_TOKEN_EXPIRED,
-                        "Refresh token has expired"
-                );
-            }
+        if (token.getExpiresAt().isBefore(Instant.now())) {
+            throw new UnauthorizedException(
+                    ErrorCode.TOKEN_EXPIRED,
+                    "Refresh token expired");
+        }
 
+        // Rotate token
         token.setRevoked(true);
         refreshTokenRepository.save(token);
 
-        logger.info("Refresh token revoked successfully");
+        return issueTokens(token.getUser(), response);
+    }
+
+
+    public void logout(HttpServletRequest request,
+                       HttpServletResponse response) {
+
+        logger.info("Logout requested");
+
+        String refreshToken = cookieService.extract(request);
+
+        if (refreshToken != null) {
+            refreshTokenRepository.findByToken(refreshToken)
+                    .ifPresent(token -> {
+                        token.setRevoked(true);
+                        refreshTokenRepository.save(token);
+                    });
+        }
+
+        cookieService.clearRefreshToken(response);
+
+        logger.info("Logout completed");
     }
 
 
@@ -176,28 +186,40 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-    private AuthResponse issueTokens(User user) {
+    private AuthResponse issueTokens(User user,
+                                     HttpServletResponse response) {
+
         String accessToken = jwtService.generateAccessToken(user);
+
         String refreshToken = jwtService.generateRefreshToken();
         Instant refreshExpiry = Instant.now()
                 .plus(Duration.ofDays(props.getRefreshTokenExpiryDays()));
 
-        RefreshToken refreshTokenToSave = RefreshToken.builder()
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .user(user)
-                .token(refreshToken)
+                .token(refreshToken) // later we can hash
                 .expiresAt(refreshExpiry)
                 .revoked(false)
                 .build();
 
-        refreshTokenRepository.save(refreshTokenToSave);
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        cookieService.setRefreshToken(
+                response,
+                refreshToken,
+                refreshExpiry
+        );
 
         logger.info("Issued tokens for userId={}", user.getId());
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshTokenToSave.getToken())
                 .tokenType("Bearer")
-                .expiresIn(Duration.ofMinutes(props.getAccessTokenExpiryMinutes()).toSeconds())
+                .expiresIn(
+                        Duration.ofMinutes(
+                                props.getAccessTokenExpiryMinutes()
+                        ).toSeconds()
+                )
                 .build();
     }
 }
