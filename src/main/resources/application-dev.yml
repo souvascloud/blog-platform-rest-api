@@ -24,6 +24,9 @@ app:
       secret: ${APP_SECURITY_JWT_SECRET}
       access-token-expiry-minutes: ${APP_SECURITY_JWT_ACCESS_EXP_MIN}
       refresh-token-expiry-days: ${APP_SECURITY_JWT_REFRESH_EXP_DAYS}
+  cookie:
+    secure: false
+    same-site: Lax
   cors:
     allowed-origins:
       - http://localhost:4200

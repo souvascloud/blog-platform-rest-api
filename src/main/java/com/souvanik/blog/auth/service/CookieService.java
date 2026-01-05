@@ -1,5 +1,6 @@
 package com.souvanik.blog.auth.service;
 
+import com.souvanik.blog.auth.security.util.CookieProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,12 @@ import java.time.Instant;
 public class CookieService {
 
     private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
+
+    private  final CookieProperties cookieProperties;
+
+    public CookieService(CookieProperties cookieProperties) {
+        this.cookieProperties = cookieProperties;
+    }
 
     /**
      * Extracts refresh token from HttpOnly cookie.
@@ -47,8 +54,8 @@ public class CookieService {
         ResponseCookie cookie = ResponseCookie.from(
                         REFRESH_TOKEN_COOKIE, token)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
+                .secure(cookieProperties.isSecure())
+                .sameSite(cookieProperties.getSameSite())
                 .path("/auth")
                 .maxAge(Duration.between(Instant.now(), expiry))
                 .build();
