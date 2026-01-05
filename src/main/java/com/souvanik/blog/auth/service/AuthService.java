@@ -4,6 +4,8 @@ import com.souvanik.blog.auth.dto.AuthResponse;
 import com.souvanik.blog.auth.dto.LoginRequest;
 import com.souvanik.blog.auth.dto.RefreshTokenRequest;
 import com.souvanik.blog.auth.dto.RegisterRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.UUID;
 
@@ -14,13 +16,13 @@ import java.util.UUID;
  * https://opensource.org/licenses/MIT
  */
 public interface AuthService {
-    AuthResponse register(RegisterRequest request);
+    AuthResponse register(RegisterRequest request, HttpServletResponse response);
 
-    AuthResponse login(LoginRequest request);
+    AuthResponse login(LoginRequest request, HttpServletResponse response);
 
-    AuthResponse refresh(RefreshTokenRequest request);
+    AuthResponse refresh(HttpServletRequest request, HttpServletResponse response);
 
-    void logout(String refreshToken);
+    void logout(HttpServletRequest request, HttpServletResponse response);
 
     void logoutAll(UUID userId);
 

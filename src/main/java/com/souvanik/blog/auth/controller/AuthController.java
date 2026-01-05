@@ -6,13 +6,17 @@ import com.souvanik.blog.auth.dto.RefreshTokenRequest;
 import com.souvanik.blog.auth.dto.RegisterRequest;
 import com.souvanik.blog.auth.security.util.CustomUserPrincipal;
 import com.souvanik.blog.auth.service.AuthService;
+import com.souvanik.blog.auth.service.CookieService;
 import com.souvanik.blog.common.api.ApiResponse;
 import com.souvanik.blog.common.config.OpenApiConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +60,11 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
+    private final CookieService cookieService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService , CookieService cookieService) {
         this.authService = authService;
+        this.cookieService = cookieService;
     }
 
 
@@ -76,10 +82,12 @@ public class AuthController {
      * @param request registration details
      * @return JWT access and refresh tokens
      */
-    @Operation(summary = "Register a new user",
+    @Operation(
+            summary = "Register new user",
             description = """
-              Creates a new user account with USER role.On success, returns JWT access and refresh tokens.
-              """,
+        Registers a new user and returns a JWT access token.
+        A refresh token is issued automatically and stored in an HttpOnly cookie.
+        """,
             security = {}
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
@@ -140,12 +148,12 @@ public class AuthController {
                         """)
                     )
             )
-            @RequestBody @Valid RegisterRequest request) {
+            @RequestBody @Valid RegisterRequest request ,  HttpServletResponse response) {
 
         logger.debug("POST /auth/register for email={}", request.getEmail());
 
-        AuthResponse response = authService.register(request);
-        return ResponseEntity.ok(ApiResponse.success(200, response));
+        AuthResponse authResponse = authService.register(request , response);
+        return ResponseEntity.ok(ApiResponse.success(200, authResponse));
     }
 
 
@@ -155,8 +163,11 @@ public class AuthController {
      */
 
     @Operation(
-            summary = "Login user",
-            description = "Authenticates user and returns JWT access and refresh tokens.",
+            summary = "User login",
+            description = """
+        Authenticates the user and returns a JWT access token.
+        A refresh token is issued automatically and stored in an HttpOnly cookie.
+        """,
             security = {}
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
@@ -216,12 +227,12 @@ public class AuthController {
             """)
                     )
             )
-            @RequestBody @Valid LoginRequest request) {
+            @RequestBody @Valid LoginRequest request , HttpServletResponse response) {
 
         logger.debug("POST /auth/login for email={}", request.getEmail());
 
-        AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(ApiResponse.success(200, response));
+        AuthResponse authResponse = authService.login(request , response);
+        return ResponseEntity.ok(ApiResponse.success(200, authResponse));
     }
 
 
@@ -231,8 +242,10 @@ public class AuthController {
      */
     @Operation(
             summary = "Refresh access token",
-            description = "Generates a new access token using a valid refresh token.",
-            security = {}
+            description = """
+        Generates a new access token using a refresh token stored in an HttpOnly cookie.
+        No request body is required.
+        """
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -280,12 +293,13 @@ public class AuthController {
                             )
                     )
             )
-            @RequestBody @Valid RefreshTokenRequest request) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         logger.debug("POST /auth/refresh");
 
-        AuthResponse response = authService.refresh(request);
-        return ResponseEntity.ok(ApiResponse.success(200, response));
+        AuthResponse authResponse = authService.refresh(request , response);
+        return ResponseEntity.ok(ApiResponse.success(200, authResponse));
     }
 
 
@@ -295,10 +309,11 @@ public class AuthController {
 
     @Operation(
             summary = "Logout user",
-            description = "Revokes the refresh token so it can no longer be used.Requires JWT access token",
-            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(
-                    name = OpenApiConfig.SECURITY_SCHEME_NAME
-            )
+            description = """
+        Logs out the user by revoking the refresh token stored in an HttpOnly cookie.
+        Requires a valid access token.
+        """,
+            security = @SecurityRequirement(name = OpenApiConfig.SECURITY_SCHEME_NAME)
     )
     @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
@@ -354,23 +369,25 @@ public class AuthController {
                             )
                     )
             )
-            @RequestBody @Valid RefreshTokenRequest request) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         logger.debug("POST /auth/logout");
 
-        authService.logout(request.getRefreshToken());
+        authService.logout(request , response);
         return ResponseEntity.ok(ApiResponse.success(200, null));
     }
 
 
 
 
-    @io.swagger.v3.oas.annotations.Operation(
+    @Operation(
             summary = "Logout from all devices",
-            description = "Revokes all refresh tokens for the currently authenticated user.Requires JWT access token ",
-            security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(
-                    name = OpenApiConfig.SECURITY_SCHEME_NAME
-            )
+            description = """
+        Revokes all refresh tokens for the authenticated user
+        and logs out from all active sessions.
+        """,
+            security = @SecurityRequirement(name = OpenApiConfig.SECURITY_SCHEME_NAME)
     )
     @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
     @io.swagger.v3.oas.annotations.responses.ApiResponses({
@@ -404,12 +421,13 @@ public class AuthController {
     })
     @PostMapping("/logout-all")
     public ResponseEntity<ApiResponse<Void>> logoutAll(
-            @AuthenticationPrincipal CustomUserPrincipal principal
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            HttpServletResponse response
     ) {
 
         logger.debug("POST /auth/logout-all for userId={}", principal.getUserId());
         authService.logoutAll(principal.getUserId());
-
+        cookieService.clearRefreshToken(response);
         return ResponseEntity.ok(ApiResponse.success(200, null));
     }
 }

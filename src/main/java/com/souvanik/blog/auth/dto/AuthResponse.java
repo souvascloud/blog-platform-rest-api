@@ -18,10 +18,6 @@ public class AuthResponse {
     @Schema(description = "JWT access token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String accessToken;
 
-    @Schema(description = "Refresh token for getting new access tokens",
-            example = "b7a3c2f1-2e8a-4d4e-9d77-3a2f1d8e9b10")
-    private String refreshToken;
-
     @Schema(description = "Token type", example = "Bearer")
     private String tokenType;
 
