@@ -8,8 +8,7 @@ INSERT INTO users (
     status,
     created_at
 )
-VALUES (
-           gen_random_uuid(),
+VALUES(      RANDOM_UUID(),
            'admin',
            'admin@blog.com',
            '$2a$10$McYV6gaFjP95LRrzdIM52OIhbcyKqxGGeUfZpWTNTMNQr/UCQfKoK',
