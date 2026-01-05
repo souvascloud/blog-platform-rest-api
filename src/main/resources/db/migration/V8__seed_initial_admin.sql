@@ -9,7 +9,7 @@ INSERT INTO users (
     created_at
 )
 VALUES (
-            RANDOM_UUID(),
+           gen_random_uuid(),
            'admin',
            'admin@blog.com',
            '$2a$10$McYV6gaFjP95LRrzdIM52OIhbcyKqxGGeUfZpWTNTMNQr/UCQfKoK', -- Admin@123
